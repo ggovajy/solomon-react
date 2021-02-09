@@ -12,6 +12,44 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import TreeItem from '@material-ui/lab/TreeItem';
+import TreeView from '@material-ui/lab/TreeView';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
+
+const data = {
+  id: 'root',
+  name: 'main',
+  children: [
+    {
+      id: '1',
+      name: 'sub - 1',
+    },
+    {
+      id: '2',
+      name: 'sub - 1',
+    },
+    {
+      id: '3',
+      name: 'sub - 3',
+      children: [
+        {
+          id: '4',
+          name: 'sub - 3 - 4'
+        },
+        {
+          id: '5',
+          name: 'sub - 3 - 4'
+        },
+        {
+          id: '6',
+          name: 'sub - 3 - 4'
+        },
+      ],
+    },
+  ],
+  
+};
 
 const useStyles = makeStyles({
   list: {
@@ -30,7 +68,11 @@ export default function NavBar() {
       bottom: false,
       right: false,
     });
-  
+    const renderTree = (nodes) => (
+      <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
+        {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
+      </TreeItem>
+    );
     const toggleDrawer = (anchor, open) => (event) => {
       if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
         return;
@@ -45,8 +87,8 @@ export default function NavBar() {
           [classes.fullList]: anchor === 'top' || anchor === 'bottom',
         })}
         role="presentation"
-        onClick={toggleDrawer(anchor, false)}
-        onKeyDown={toggleDrawer(anchor, false)}
+        // onClick={toggleDrawer(anchor, false)}
+        // onKeyDown={toggleDrawer(anchor, false)}
       >
         <List>
           {['TodoList','Manage-book','Extra'].map((text, index) => (
@@ -66,6 +108,14 @@ export default function NavBar() {
             </ListItem>
           ))}
         </List>
+        <TreeView
+          className={classes.root}
+          defaultCollapseIcon={<ExpandMoreIcon />}
+          defaultExpanded={['root']}
+          defaultExpandIcon={<ChevronRightIcon />}
+        >
+          {renderTree(data)}
+        </TreeView>
       </div>
     );
   
@@ -73,12 +123,12 @@ export default function NavBar() {
       <div>
         {/* {['left', 'right', 'top', 'bottom'].map((anchor) => ( */}
         {['left'].map((anchor) => (
-          <React.Fragment key={anchor}>
+          <>
             <Button onClick={toggleDrawer(anchor, true)}>Side Menu</Button>
             <Drawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)}>
               {list(anchor)}
             </Drawer>
-          </React.Fragment>
+          </>
         ))}
       </div>
     );
